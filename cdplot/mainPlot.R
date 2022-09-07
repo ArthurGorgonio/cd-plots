@@ -13,15 +13,16 @@ for (pack in packages) {
 parser <- ArgumentParser(description='Performs friedman and Nenemyi Tests. Also, it generates the Critical Difference Diagrams.')
 
 
-parser$add_argument('files', nargs='+', help='the files that be processed (CSV is expected)')
-parser$add_argument('--test', default=FALSE, type='logical', help='run Friedman and Nemenyi Tests (default = FALSE)')
-parser$add_argument('--cd', default=TRUE, type='logical', help='generate CD plot (default = TRUE)')
-parser$add_argument('--location', default='./', help='path to save the plots and outputs (default = ./)')
-parser$add_argument('--delimiter', default='\t', help='the delimiter in the files (default = \\t <TAB>)')
-parser$add_argument('--row', default=0, type='integer', help='the index of the names of the rows (default = 0)')
-parser$add_argument('--col', default=LETTERS, help='the name of the columns (default = capital letters)')
-parser$add_argument('--head', default=FALSE, type='logical', help='the first row is the columns names? (default = FALSE)')
+parser$add_argument('files', nargs='+', help='Files that will be processed (CSV is expected)')
+parser$add_argument('--test', default=FALSE, type='logical', help='Run Friedman and Nemenyi Tests (default = FALSE)')
+parser$add_argument('--cd', default=TRUE, type='logical', help='Generate CD plot (default = TRUE)')
+parser$add_argument('--location', default='./', help='Path to save the plots and outputs (default = ./)')
+parser$add_argument('--delimiter', default='\t', help='Delimiter in the files (default = \\t <TAB>)')
+parser$add_argument('--row', default=0, type='integer', help='Index of the names of the rows (default = 0)')
+parser$add_argument('--col', default=LETTERS, help='Name of the columns (default = capital letters)')
+parser$add_argument('--head', default=FALSE, type='logical', help='Is first row the columns names? (default = FALSE)')
 parser$add_argument('--alpha', default=0.05, type='double', help='The significance level of the test (default = 0.05)')
+parser$add_argument('--decreasing', default=TRUE, type='logical', help='Are high values the best values? (default = TRUE)')
 
 
 get_data <- function(file, header=FALSE, row_names=0, sep=',') {
@@ -57,7 +58,7 @@ for(file in params$files) {
     png(paste(params$location, file_name, '.png', sep=''), 800, 480,
         bg = 'transparent')
     par(family='Verdana')
-    plotCD(data, alpha = params$alpha, cex = 1.6)
+    plotCD(data, alpha = params$alpha, cex = 1.6, decreasing=params$decreasing)
     title(file_name)
     dev.off()
   }
