@@ -1,4 +1,4 @@
-rankMatrix <- function(data, decreasing=TRUE, ...){
+rankMatrix <- function(data, decreasing, ...){
   # The rank function is based on an increasing ordering. In case we need to
   # get the rank of the descreasing ordering, just rank -x instead of x
   if (decreasing){
@@ -17,7 +17,7 @@ rankMatrix <- function(data, decreasing=TRUE, ...){
   return(rankings)
 }
 
-getNemenyiCD <- function (alpha = 0.05, num.alg, num.problems) {
+getNemenyiCD <- function(alpha = 0.05, num.alg, num.problems) {
   # Auxiliar function to compute the critical difference for Nemenyi test
   # Args:
   #   alpha:        Alpha for the test
@@ -33,12 +33,12 @@ getNemenyiCD <- function (alpha = 0.05, num.alg, num.problems) {
   return(cd)
 }
 
-plotCD <- function (results.matrix, alpha=0.05, cex=0.75, ...) {
+plotCD <- function(results.matrix, decreasing, alpha=0.05, cex=0.75, ...) {
   k <- dim(results.matrix)[2]
   N <- dim(results.matrix)[1]
   cd <- getNemenyiCD(alpha=alpha, num.alg=k, num.problems=N)
   
-  mean.rank <- sort(colMeans(rankMatrix(results.matrix, ...)))
+  mean.rank <- sort(colMeans(rankMatrix(results.matrix, decreasing, ...)))
   
   # Separate the algorithms in left and right parts
   lp <- round(k/2)
