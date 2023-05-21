@@ -6,7 +6,7 @@ source('~/workspace/cd-plots/cdplot/cd.R') # Esse arquivo tem toda a criação d
 packages <- c('PMCMRplus', 'argparse', 'stringi')
 for (pack in packages) {
   if (!require(pack, character.only = TRUE)) {
-    install.packages(pack)
+    install.packages(pack, repos='http://cran.us.r-project.org')
   }
   library(pack, character.only = TRUE, verbose = F)
 }
@@ -207,15 +207,14 @@ for(file in params$files) {
         plot_name <- plot_location(file_name, params$location, params$suffix)
         print("Location stored!")
         cat('\n\n', plot_name, '\nFILE: ', file, '\n\n')
-        save_plot(
-            data,
-            plot_name,
-            file_name,
-            params$decreasing,
-            params$alpha,
-            params$cex,
-            params$width,
-            params$height
+        png(plot_name, params$width, params$height)
+        plotCD(
+          data,
+          decreasing=params$decreasing,
+          alpha=params$alpha,
+          cex=params$cex,
         )
+        title(file_name)
+        dev.off()
     }
 }
