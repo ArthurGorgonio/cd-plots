@@ -1,9 +1,28 @@
 #!/usr/bin/Rscript
+# params <- list()
+#
+# params$file <- "~/cephas_doc/data/ct-f1.csv"
+# params$location <- './'
+# params$head <- T
+# params$cd <- T
+# params$delimiter <- '\t'
+# params$row <- 0
+# params$alhpa <- 0.05
+# params$only <- ''
+# params$cex <- 1.6
+# params$width <- 800
+# params$height <- 480
+# params$decreasing <- T
+# params$test <- TRUE
+# params$col <- 'St-rand,St-std,St-EbAL(S),St-EbAL(L),St-EbAL(SL),St-dwc-C(L),St-dwc-C(L),St-dwc-C(SL),St-dwc-A(S),St-dwc-A(L),St-dwc-A(SL)'
+# params$suffix <- ''
+
+
 
 source('~/workspace/cd-plots/cdplot/cd.R') # Esse arquivo tem toda a criação do plot
 
 # Instalação e carregamento de pacotes necessário para utilizar os diagramas
-packages <- c('PMCMRplus', 'argparse', 'stringi')
+packages <- c('PMCMRplus', 'argparse', 'stringi', 'latex2exp')
 for (pack in packages) {
   if (!require(pack, character.only = TRUE)) {
     install.packages(pack, repos='http://cran.us.r-project.org')
@@ -11,7 +30,7 @@ for (pack in packages) {
   library(pack, character.only = TRUE, verbose = F)
 }
 
-# args <- commandArgs(TRUE)
+args <- commandArgs(TRUE)
 parser <- ArgumentParser(description='Performs friedman and Nenemyi Tests. Also, it generates the Critical Difference Diagrams.')
 
 parser$add_argument(
@@ -30,7 +49,7 @@ parser$add_argument(
 parser$add_argument(
   '--cd',
   action='store_true',
-  help='generate CD plot (default = TRUE)'
+  help='generate CD plot'
 )
 
 parser$add_argument(
@@ -61,7 +80,7 @@ parser$add_argument(
 parser$add_argument(
   '--head',
   action='store_true',
-  help='the first row is the columns names? (default = FALSE)'
+  help='the first row is the columns names?'
 )
 
 parser$add_argument(
@@ -164,14 +183,15 @@ save_plot <- function(
 #' @return the full location on disk where the figure must be saved.
 #'
 plot_location <- function(file_name, location, suffix) {
-    if (suffix != '') {
-        return(paste(location, file_name, '_', suffix, '.png', sep=''))
+    prefix <- "CD-plot_"
+    if ((suffix != '') && (suffix != file_name)) {
+        return(paste(location, prefix, file_name, '_', suffix, '.png', sep=''))
     }
-    return(paste(location, file_name, '.png', sep=''))
+    return(paste(location, prefix, file_name, '.png', sep=''))
 }
 
 #' @description read a structured file (csv, tsv, etc)
-#' 
+#'
 #' @param file path to the file.
 #' @param header is the file has a header? Default is False.
 #' @param row_names the index of the id row, if exists. 0 to not use.
@@ -189,15 +209,21 @@ get_data <- function(file, header=FALSE, row_names=0, sep=',') {
 
 params <- parser$parse_args()
 for(file in params$files) {
-    file_name <- strsplit(file, "[/.]")[[1]][3]
+    aux <- strsplit(file, "[/._]")[[1]]
+    aux2 <- strsplit(file, "[/]")[[1]]
+    file_name <- paste(aux2[length(aux2) - 1], aux[length(aux) - 1], sep='-')
     data <- get_data(file, params$head, params$row, params$delimiter)
-    print("Data is stored")
     if (params$only != '') {
         params$only <- c(as.numeric(strsplit(params$only, ',')[[1]]))
     } else {
         params$only <- c(1:length(params$col[1:ncol(data)]))
     }
     data <- data[, params$only]
+    cat('------------------------------\n')
+    print('\n============================\n\n\n')
+    print(file_name)
+    cat('------------------------------\n')
+    cat('------------------------------\n')
     colnames(data) <- unlist(strsplit(params$col, ','))[1:ncol(data)]
     if (params$test) {
         perform_friedman_test(file_name, data)
@@ -218,3 +244,4 @@ for(file in params$files) {
         dev.off()
     }
 }
+
