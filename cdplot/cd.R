@@ -38,12 +38,13 @@ plotCD <- function(results.matrix, decreasing, alpha=0.05, cex=0.75, ...) {
   N <- dim(results.matrix)[1]
   cd <- getNemenyiCD(alpha=alpha, num.alg=k, num.problems=N)
 
+  ## aqui que deve mexer
   mean.rank <- sort(colMeans(rankMatrix(results.matrix, decreasing)))
 
   # Separate the algorithms in left and right parts
   lp <- round(k/2)
   left.algs <- mean.rank[1:lp]
-  right.algs <- mean.rank[(lp+1):k]
+  right.algs <- rev(mean.rank[(lp+1):k])
   max.rows <- ceiling(k/2)
 
   # Basic dimensions and definitions
@@ -140,11 +141,21 @@ plotCD <- function(results.matrix, decreasing, alpha=0.05, cex=0.75, ...) {
     if(length(id) == 0) {
       row <- c(row, tail(row, 1) + 1)
     } else {
-      row <- c(row, length(row)%/%3 + length(row)%%3)
+      row <- c(row, length(row)%/%5 + length(row)%%15)
     }
   }
   step <- max(row) / 3
+
+  for(r in 1:(length(row) - 1)) {
+    n1 <- row[r]
+    n2 <- row[r+1]
+
+    if(n1 == n2) {
+      row[r+1] <- 1
+    }
+  }
   row <- row - 1
+
 
   # Draw the line
   dk <- sapply (1:nlines,
